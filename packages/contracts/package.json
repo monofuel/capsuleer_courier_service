@@ -1,0 +1,45 @@
+{
+  "name": "contracts",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "mud build",
+    "clean": "forge clean && rimraf src/codegen",
+    "deploy:local": "pnpm run build && mud deploy",
+    "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
+    "dev": "pnpm mud dev-contracts",
+    "lint": "pnpm run prettier && pnpm run solhint",
+    "prettier": "prettier --write 'src/**/*.sol'",
+    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
+    "test": "tsc --noEmit && mud test",
+    "configure-likes": ". ./.env && pnpm forge script ./script/ConfigureLikes.s.sol:ConfigureLikes --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "create-likes": ". ./.env && pnpm forge script ./script/CreateLikes.s.sol:CreateLikes --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "create-delivery": ". ./.env && pnpm forge script ./script/CreateDelivery.s.sol:CreateDelivery --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "deliver": ". ./.env && pnpm forge script ./script/Deliver.s.sol:Deliver --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "pickup": ". ./.env && pnpm forge script ./script/Pickup.s.sol:Pickup --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv"
+    
+  },
+  "dependencies": {
+    "@eveworld/common-constants": "^0.0.7",
+    "@eveworld/world": "^0.0.7",
+    "@latticexyz/cli": "^2.0.0-next-17-awakening-9c07ab3a2",
+    "@latticexyz/schema-type": "2.0.0-next-17-awakening-9c07ab3a2",
+    "@latticexyz/store": "2.0.0-next-17-awakening-9c07ab3a2",
+    "@latticexyz/world": "2.0.0-next-17-awakening-9c07ab3a2",
+    "@latticexyz/world-modules": "2.0.0-next-17-awakening-9c07ab3a2",
+    "@openzeppelin/contracts": "^5.0.2",
+    "i": "^0.3.7",
+    "npm": "^10.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.33",
+    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
+    "prettier": "^2.6.2",
+    "prettier-plugin-solidity": "1.1.3",
+    "solhint": "^3.3.7",
+    "solhint-config-mud": "2.0.0-next-17-awakening-9c07ab3a2",
+    "solhint-plugin-mud": "2.0.0-next-17-awakening-9c07ab3a2"
+  }
+}
