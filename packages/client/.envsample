@@ -1,0 +1,13 @@
+# Change the following to the preferred smart deployable
+# If defined, this will take priority over Smart Deployable IDs passed via URL query param
+VITE_SMARTDEPLOYABLE_ID="0x048a970fcd03761899f017ae216f53a668dda1cfbd510009f2903efd8e7eefb3"
+# VITE_GATEWAY_API_URL="localhost:8080"
+# VITE_GATEWAY_API_URL="localhost:8080/mock"
+# VITE_HTTP_PROTOCOL="http"
+# VITE_WS_PROTOCOL="ws"
+
+# PRODUCTION ENVIRONMENT
+# VITE_GATEWAY_API_URL="blockchain-gateway.nursery.reitnorf.com"
+VITE_GATEWAY_API_URL="blockchain-gateway-test.nursery.reitnorf.com/mock"
+VITE_HTTP_PROTOCOL="https"
+VITE_WS_PROTOCOL="wss"
