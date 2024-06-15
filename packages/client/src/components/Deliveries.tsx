@@ -97,6 +97,7 @@ function CreateDelivery({ network, submitDisabled, typeMap, smartObjectId, creat
 
   // TODO fetch image
 
+  // TODO this should be obtained from the list of items with likes configured
   const typeIdWhitelist = ["77800", "77811"];
 
   return (

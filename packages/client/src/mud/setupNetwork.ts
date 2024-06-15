@@ -18,6 +18,7 @@ import mudConfig from "../../../contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
+const INDEXER_URL = "https://awakening-indexer.exoplanet-horizons.net";
 
 // This code seems to work OK in chrome, but it is very slow to sync state from the chain
 // NB. this code does not appear to work from the in-game browser for some reason. not sure why.
@@ -63,19 +64,20 @@ export async function setupNetwork() {
   });
 
 
-  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
-    world,
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient: publicClient as any,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
-  });
+  // const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
+  //   world,
+  //   config: mudConfig,
+  //   address: networkConfig.worldAddress as Hex,
+  //   publicClient: publicClient as any,
+  //   startBlock: BigInt(networkConfig.initialBlockNumber),
+  // });
 
-  const { tables, useStore } = await syncToZustand({
+  const { tables, useStore, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToZustand({
     config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient: publicClient as any,
     startBlock: BigInt(networkConfig.initialBlockNumber),
+    indexerUrl: INDEXER_URL,
   });
 
   if (networkConfig.faucetServiceUrl) {
@@ -103,7 +105,7 @@ export async function setupNetwork() {
 
   return {
     world,
-    components,
+    // components,
     playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     tables,
     useStore,
