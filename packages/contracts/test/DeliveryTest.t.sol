@@ -50,7 +50,6 @@ contract DeliveryTest is MudTest {
   function testPlayerLikes() public {
     address sender = address(1337);
     uint256 addLikes = 50;
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
     world.call(
       CCS_SYSTEM_ID,
