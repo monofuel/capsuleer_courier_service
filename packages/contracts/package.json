@@ -13,11 +13,11 @@
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "test": "tsc --noEmit && mud test",
-    "configure-likes": ". ./.env && pnpm forge script ./script/ConfigureLikes.s.sol:ConfigureLikes --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
-    "create-likes": ". ./.env && pnpm forge script ./script/CreateLikes.s.sol:CreateLikes --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
-    "create-delivery": ". ./.env && pnpm forge script ./script/CreateDelivery.s.sol:CreateDelivery --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
-    "deliver": ". ./.env && pnpm forge script ./script/Deliver.s.sol:Deliver --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
-    "pickup": ". ./.env && pnpm forge script ./script/Pickup.s.sol:Pickup --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv"
+    "configure-likes": ". ./.env.testnet && pnpm forge script ./script/ConfigureLikes.s.sol:ConfigureLikes --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "create-likes": ". ./.env.testnet && pnpm forge script ./script/CreateLikes.s.sol:CreateLikes --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "create-delivery": ". ./.env.testnet && pnpm forge script ./script/CreateDelivery.s.sol:CreateDelivery --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "deliver": ". ./.env.testnet && pnpm forge script ./script/Deliver.s.sol:Deliver --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
+    "pickup": ". ./.env.testnet && pnpm forge script ./script/Pickup.s.sol:Pickup --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv"
     
   },
   "dependencies": {
