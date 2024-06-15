@@ -24,25 +24,22 @@ contract DeliveryTest is MudTest {
   using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
-  // ICapsuleerCourierService ccs;
-  TestCapsuleerCourierService testCCS;
+  ResourceId CCS_SYSTEM_ID;
 
   function setUp() public override {
     worldAddress = vm.envAddress("WORLD_ADDRESS");
     StoreSwitch.setStoreAddress(worldAddress);
     world = IBaseWorld(worldAddress);
-    // ccs = ICapsuleerCourierService(worldAddress);
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
     // Setup a test CCS wrapper system to replace the existing one
     bytes14 CCS_DEPLOYMENT_NAMESPACE = "borp";
     bytes16 SYSTEM_NAME = bytes16("CapsuleerCourier");
-    ResourceId CCS_SYSTEM_ID =
+    CCS_SYSTEM_ID =
       ResourceId.wrap((bytes32(abi.encodePacked(RESOURCE_SYSTEM, CCS_DEPLOYMENT_NAMESPACE, SYSTEM_NAME))));
 
-    testCCS = new TestCapsuleerCourierService();
-    // world.registerNamespace(CCS_SYSTEM_ID.getNamespaceId());
     vm.startBroadcast(deployerPrivateKey);
+    TestCapsuleerCourierService testCCS = new TestCapsuleerCourierService();
 
     world.registerSystem(CCS_SYSTEM_ID, testCCS, true);
     
@@ -51,19 +48,13 @@ contract DeliveryTest is MudTest {
   }
   
   function testPlayerLikes() public {
-    // TODO this does not work  yet, computers are hard
     address sender = address(1337);
     uint256 addLikes = 50;
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
-    // vm.startPrank(sender);
-    // vm.startBroadcast(deployerPrivateKey);
-
-
-    // testCCS.setLikes(77800, 1);
-
-    // testCCS.tAddPlayerLikes(sender, addLikes);
-
-    // vm.stopBroadcast();
+    world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(TestCapsuleerCourierService.tAddPlayerLikes, (sender, addLikes))
+    );
   }
 }
