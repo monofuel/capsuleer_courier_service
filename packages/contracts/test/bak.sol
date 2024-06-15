@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 
+// TODO this file is being refactored into separate test t.sol files
+
 import "forge-std/Test.sol";
 import { PuppetModule } from "@latticexyz/world-modules/src/modules/puppet/PuppetModule.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
