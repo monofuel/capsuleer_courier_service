@@ -38,7 +38,7 @@ contract CapsuleerCourierService is System {
   using InventoryUtils for bytes14;
   using SmartDeployableUtils for bytes14;
 
-  // TODO tests
+  // TESTED
   function getItemId(uint256 typeId) public pure returns (uint256) {
     string memory packed = string(abi.encodePacked("item:devnet-", Strings.toString(typeId)));
     return uint256(keccak256(abi.encodePacked(packed)));
@@ -51,6 +51,7 @@ contract CapsuleerCourierService is System {
     ItemLikes.set(itemId, amount);
   }
 
+  // TESTED
   function addPlayerLikes(address playerAddress, uint256 amount) internal {
     console.log("Adding likes to player:", playerAddress, " amount:", amount);
     uint256 existingLikes = PlayerLikes.get(playerAddress);

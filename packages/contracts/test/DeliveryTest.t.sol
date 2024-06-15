@@ -25,12 +25,13 @@ contract DeliveryTest is MudTest {
 
   IBaseWorld world;
   ResourceId CCS_SYSTEM_ID;
+  uint256 deployerPrivateKey;
 
   function setUp() public override {
     worldAddress = vm.envAddress("WORLD_ADDRESS");
     StoreSwitch.setStoreAddress(worldAddress);
     world = IBaseWorld(worldAddress);
-    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
     // Setup a test CCS wrapper system to replace the existing one
     bytes14 CCS_DEPLOYMENT_NAMESPACE = "borp";
@@ -46,7 +47,47 @@ contract DeliveryTest is MudTest {
     vm.stopBroadcast();
 
   }
+
+  function getItemId(uint256 typeId) public pure returns (uint256) {
+    string memory packed = string(abi.encodePacked("item:devnet-", Strings.toString(typeId)));
+    return uint256(keccak256(abi.encodePacked(packed)));
+  }
   
+  function testGetItemId(uint16 typeId) public {
+    // using int16 because typeID is generally a small number even though it's uint256
+    vm.assume(typeId != 0);
+    uint256 expectedItemId = getItemId(typeId);
+
+    vm.startBroadcast(deployerPrivateKey);
+    bytes memory result = world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(CapsuleerCourierService.getItemId, (typeId))
+    );
+
+    uint256 itemId = abi.decode(result, (uint256));
+
+    assertEq(itemId, expectedItemId);
+    vm.stopBroadcast();
+  }
+
+  function testSetLikes(uint16 typeId, uint256 amount) public {
+    vm.assume(typeId != 0);
+
+    // setLikes requires owner permissions
+    vm.startBroadcast(deployerPrivateKey);
+    world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(CapsuleerCourierService.setLikes, (typeId, amount))
+    );
+
+    // assert the table is updated
+    uint256 itemId = getItemId(typeId);
+    uint256 likes = ItemLikes.get(itemId);
+    assertEq(likes, amount);
+
+    vm.stopBroadcast();
+  }
+
   function testPlayerLikes(address sender, uint256 addLikes) public {
     vm.assume(sender != address(0));
     vm.assume(addLikes != 0);
@@ -55,5 +96,7 @@ contract DeliveryTest is MudTest {
       CCS_SYSTEM_ID,
       abi.encodeCall(TestCapsuleerCourierService.tAddPlayerLikes, (sender, addLikes))
     );
+
+    // TODO assert likes are set
   }
 }
