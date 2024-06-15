@@ -48,6 +48,12 @@ export default mudConfig({
         deliveriesCompleted: "uint256",
         pendingSupplyCount: "uint256",
       }
-    }
+    },
+    // TestIncrementTable: {
+    //   keySchema: {},
+    //   valueSchema: {
+    //     value: "uint256",
+    //   }
+    // },
   }
 });
