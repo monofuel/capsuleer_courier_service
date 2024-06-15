@@ -38,11 +38,21 @@ contract CapsuleerCourierService is System {
   using InventoryUtils for bytes14;
   using SmartDeployableUtils for bytes14;
 
+  // TODO tests
+  function getItemId(uint256 typeId) public pure returns (uint256) {
+    string memory packed = string(abi.encodePacked("item:devnet-", Strings.toString(typeId)));
+    return uint256(keccak256(abi.encodePacked(packed)));
+  }
+
   function setLikes(uint256 typeId, uint256 amount) public {
     _requireOwner();
-    string memory packed = string(abi.encodePacked("item:devnet-", Strings.toString(typeId)));
-    uint256 itemId = uint256(keccak256(abi.encodePacked(packed)));
+    uint256 itemId = getItemId(typeId);
     ItemLikes.set(itemId, amount);
+  }
+
+  function addPlayerLikes(address playerAddress, uint256 amount) internal {
+    uint256 existingLikes = PlayerLikes.get(playerAddress);
+    PlayerLikes.set(playerAddress, existingLikes + amount);
   }
 
   function createDeliveryRequest(
@@ -53,8 +63,7 @@ contract CapsuleerCourierService is System {
     require(itemQuantity > 0, "quantity cannot be 0");
     require(itemQuantity <= 500, "quantity cannot be more than 500");
 
-    string memory packed = string(abi.encodePacked("item:devnet-", Strings.toString(typeId)));
-    uint256 itemId = uint256(keccak256(abi.encodePacked(packed)));
+    uint256 itemId = getItemId(typeId);
 
     EntityRecordTableData memory itemEntity = EntityRecordTable.get(
       FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.entityRecordTableId(),
@@ -146,11 +155,7 @@ contract CapsuleerCourierService is System {
       );
     }
 
-    // grant the likes
-
-    uint256 existingLikes = PlayerLikes.get(_msgSender());
-    PlayerLikes.set(_msgSender(), existingLikes + (likes * delivery.itemQuantity));
-
+    addPlayerLikes(_msgSender(), likes * delivery.itemQuantity);
 
     Deliveries.setDelivered(deliveryId, true);
     Deliveries.setSender(deliveryId, _msgSender());
