@@ -47,9 +47,9 @@ contract DeliveryTest is MudTest {
 
   }
   
-  function testPlayerLikes() public {
-    address sender = address(1337);
-    uint256 addLikes = 50;
+  function testPlayerLikes(address sender, uint256 addLikes) public {
+    vm.assume(sender != address(0));
+    vm.assume(addLikes != 0);
 
     world.call(
       CCS_SYSTEM_ID,

@@ -215,7 +215,7 @@ contract CapsuleerCourierService is System {
     } else return InventoryLib.World({ iface: IBaseWorld(_world()), namespace: FRONTIER_WORLD_DEPLOYMENT_NAMESPACE });
   }
 
-  function getContractAddress() public returns (address) {
+  function getContractAddress() public view returns (address) {
     return address(this);
   }
 
