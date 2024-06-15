@@ -44,6 +44,7 @@ contract CapsuleerCourierService is System {
     return uint256(keccak256(abi.encodePacked(packed)));
   }
 
+  // TESTED
   function setLikes(uint256 typeId, uint256 amount) public {
     _requireOwner();
     console.log("Setting likes for item:", typeId, " amount:", amount);

@@ -88,15 +88,54 @@ contract DeliveryTest is MudTest {
     vm.stopBroadcast();
   }
 
-  function testPlayerLikes(address sender, uint256 addLikes) public {
+  function testPlayerLikes(address sender, uint16 addLikes) public {
+    // uint16 addLikes to prevent overflow
     vm.assume(sender != address(0));
     vm.assume(addLikes != 0);
+
+    vm.startBroadcast(deployerPrivateKey);
+    uint256 existingLikes = PlayerLikes.get(sender);
+    vm.stopBroadcast();
 
     world.call(
       CCS_SYSTEM_ID,
       abi.encodeCall(TestCapsuleerCourierService.tAddPlayerLikes, (sender, addLikes))
     );
 
-    // TODO assert likes are set
+    vm.startBroadcast(deployerPrivateKey);
+    uint256 updatedLikes = PlayerLikes.get(sender);
+    assertEq(updatedLikes, existingLikes + addLikes);
+    vm.stopBroadcast();
+  }
+
+  function testAddingPlayerLikes(address sender, uint16 addLikes) public {
+    vm.assume(sender != address(0));
+    vm.assume(addLikes != 0);
+
+    vm.startBroadcast(deployerPrivateKey);
+    uint256 existingLikes = PlayerLikes.get(sender);
+    vm.stopBroadcast();
+
+    // add likes twice to test that we are adding to existing likes
+    world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(TestCapsuleerCourierService.tAddPlayerLikes, (sender, addLikes))
+    );
+
+    vm.startBroadcast(deployerPrivateKey);
+    uint256 updatedLikes = PlayerLikes.get(sender);
+    assertEq(updatedLikes, existingLikes + addLikes);
+    vm.stopBroadcast();
+
+    world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(TestCapsuleerCourierService.tAddPlayerLikes, (sender, addLikes))
+    );
+
+
+    vm.startBroadcast(deployerPrivateKey);
+    uint256 finalLikes = PlayerLikes.get(sender);
+    assertEq(finalLikes, existingLikes + addLikes + addLikes);
+    vm.stopBroadcast();
   }
 }
