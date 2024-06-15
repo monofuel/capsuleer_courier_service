@@ -38,6 +38,16 @@ export default mudConfig({
       valueSchema: {
         likes: "uint256",
       }
+    },
+    PlayerMetrics: {
+      keySchema: {
+        playerAddress: "address",
+      },
+      valueSchema: {
+        likes: "uint256",
+        deliveriesCompleted: "uint256",
+        pendingSupplyCount: "uint256",
+      }
     }
   }
 });

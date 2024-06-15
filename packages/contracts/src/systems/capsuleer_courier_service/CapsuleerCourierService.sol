@@ -46,12 +46,15 @@ contract CapsuleerCourierService is System {
 
   function setLikes(uint256 typeId, uint256 amount) public {
     _requireOwner();
+    console.log("Setting likes for item:", typeId, " amount:", amount);
     uint256 itemId = getItemId(typeId);
     ItemLikes.set(itemId, amount);
   }
 
   function addPlayerLikes(address playerAddress, uint256 amount) internal {
+    console.log("Adding likes to player:", playerAddress, " amount:", amount);
     uint256 existingLikes = PlayerLikes.get(playerAddress);
+    console.log("fetched existing likes");
     PlayerLikes.set(playerAddress, existingLikes + amount);
   }
 
