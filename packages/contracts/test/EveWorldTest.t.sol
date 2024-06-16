@@ -11,7 +11,8 @@ import "@eveworld/common-constants/src/constants.sol";
 import { EntityRecordTable, EntityRecordTableData } from "@eveworld/world/src/codegen/tables/EntityRecordTable.sol";
 import { EntityRecordLib } from "@eveworld/world/src/modules/entity-record/EntityRecordLib.sol";
 import { Utils as EntityRecordUtils } from "@eveworld/world/src/modules/entity-record/Utils.sol";
-
+import { DeployableState, DeployableStateData } from "@eveworld/world/src/codegen/tables/DeployableState.sol";
+import { State } from "@eveworld/world/src/modules/smart-deployable/types.sol";
 import { SmartStorageUnitTest } from "@eveworld/world/test/smart-storage-unit/SmartStorageUnitTest.t.sol";
 
 // test file for world helpers
@@ -72,7 +73,21 @@ contract EveWorldTest is MudTest {
     ssu.addEntityRecord(getItemId(8237), 8237, 12, 150, true);
   }
 
-  function testSSU() public {
-    // TODO assert ssu exists
+    function testSetDeployableStateToValid(uint256 smartObjectId) public {
+    vm.assume(smartObjectId != 0);
+
+    DeployableState.set(
+      SMART_DEPLOYABLE_DEPLOYMENT_NAMESPACE.deployableStateTableId(),
+      smartObjectId,
+      DeployableStateData({
+        createdAt: block.timestamp,
+        previousState: State.ANCHORED,
+        currentState: State.ONLINE,
+        isValid: true,
+        anchoredAt: block.timestamp,
+        updatedBlockNumber: block.number,
+        updatedBlockTime: block.timestamp
+      })
+    );
   }
 }
