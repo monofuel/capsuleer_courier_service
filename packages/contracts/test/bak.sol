@@ -162,7 +162,7 @@ contract DeliveryTest is MudTest {
 
   }
 
-  function testSetDeployableStateToValid() public {
+  function baktestSetDeployableStateToValid() public {
     vm.assume(smartObjectId != 0);
 
     DeployableState.set(
@@ -238,7 +238,7 @@ contract DeliveryTest is MudTest {
 
 
     // insert item to the ephemeral storage table
-    testSetDeployableStateToValid();
+    baktestSetDeployableStateToValid();
 
     InventoryItem[] memory items = new InventoryItem[](1);
     items[0] = InventoryItem(entityId, sender, itemId, typeId, 1, itemQuantity);
