@@ -14,6 +14,7 @@ import { Utils as EntityRecordUtils } from "@eveworld/world/src/modules/entity-r
 import { DeployableState, DeployableStateData } from "@eveworld/world/src/codegen/tables/DeployableState.sol";
 import { State } from "@eveworld/world/src/modules/smart-deployable/types.sol";
 import { SmartStorageUnitTest } from "@eveworld/world/test/smart-storage-unit/SmartStorageUnitTest.t.sol";
+import { Utils as SmartDeployableUtils } from "@eveworld/world/src/modules/smart-deployable/Utils.sol";
 
 // test file for world helpers
 
@@ -22,14 +23,16 @@ contract ExtendedSmartStorageUnitTest is SmartStorageUnitTest {
   using EntityRecordUtils for bytes14;
   using EntityRecordLib for EntityRecordLib.World;
 
-  function addEntityRecord(uint256 id, uint256 typeId, uint256 level, uint256 quantity, bool isBlueprint) public {
-    EntityRecordTable.set(FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.entityRecordTableId(), id, typeId, level, quantity, isBlueprint);
+  function addEntityRecord(uint256 id, uint256 typeId, uint256 volume, bool recordExists) public {
+    console.log("adding" , id, typeId);
+    EntityRecordTable.set(ENTITY_RECORD_DEPLOYMENT_NAMESPACE.entityRecordTableId(), id, id, typeId, volume, recordExists);
   }
 }
 
 contract EveWorldTest is MudTest {
   using EntityRecordUtils for bytes14;
   using EntityRecordLib for EntityRecordLib.World;
+  using SmartDeployableUtils for bytes14;
 
   uint256 deployerPrivateKey;
   IBaseWorld world;
@@ -65,29 +68,13 @@ contract EveWorldTest is MudTest {
   }
 
   function setupTestEntities() public {
-    ssu.addEntityRecord(getItemId(4235), 4235, 12, 100, true);
-    ssu.addEntityRecord(getItemId(4236), 4236, 12, 200, true);
-    ssu.addEntityRecord(getItemId(4237), 4237, 12, 150, true);
-    ssu.addEntityRecord(getItemId(8235), 8235, 12, 100, true);
-    ssu.addEntityRecord(getItemId(8236), 8236, 12, 200, true);
-    ssu.addEntityRecord(getItemId(8237), 8237, 12, 150, true);
-  }
-
-    function testSetDeployableStateToValid(uint256 smartObjectId) public {
-    vm.assume(smartObjectId != 0);
-
-    DeployableState.set(
-      SMART_DEPLOYABLE_DEPLOYMENT_NAMESPACE.deployableStateTableId(),
-      smartObjectId,
-      DeployableStateData({
-        createdAt: block.timestamp,
-        previousState: State.ANCHORED,
-        currentState: State.ONLINE,
-        isValid: true,
-        anchoredAt: block.timestamp,
-        updatedBlockNumber: block.number,
-        updatedBlockTime: block.timestamp
-      })
-    );
+    ssu.addEntityRecord(getItemId(4235), 4235, 10, true);
+    ssu.addEntityRecord(getItemId(4236), 4236, 10, true);
+    ssu.addEntityRecord(getItemId(4237), 4237, 10, true);
+    ssu.addEntityRecord(getItemId(8235), 8235, 10, true);
+    ssu.addEntityRecord(getItemId(8236), 8236, 10, true);
+    ssu.addEntityRecord(getItemId(8237), 8237, 10, true);
+    ssu.addEntityRecord(getItemId(77800), 77800, 10, true);
+    ssu.addEntityRecord(getItemId(77811), 77811, 10, true);
   }
 }

@@ -46,8 +46,9 @@ contract CapsuleerCourierService is System {
 
   function getValidatedItemId(uint256 typeId) public view returns (uint256) {
     uint256 itemId = getItemId(typeId);
+    console.log("checking for" , itemId,  typeId);
     EntityRecordTableData memory itemEntity = EntityRecordTable.get(
-      FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.entityRecordTableId(),
+      ENTITY_RECORD_DEPLOYMENT_NAMESPACE.entityRecordTableId(),
       itemId
     );
     if (itemEntity.recordExists == false) {
