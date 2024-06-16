@@ -31,6 +31,7 @@ export default mudConfig({
         delivered: "bool", // false is not delivered, true is delivered, rows are deleted after pickup
       }
     },
+    // deprecated for PlayerMetrics
     PlayerLikes: {
       keySchema: {
         playerAddress: "address",

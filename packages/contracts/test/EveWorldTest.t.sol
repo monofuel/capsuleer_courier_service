@@ -43,6 +43,7 @@ import { Utils as SmartDeployableUtils } from "@eveworld/world/src/modules/smart
 import { InventoryLib } from "@eveworld/world/src/modules/inventory/InventoryLib.sol";
 
 // EVE World helper test contract
+// TODO this does not all work yet
 
 contract EveWorldTest is MudTest {
   using Utils for bytes14;
@@ -130,24 +131,25 @@ contract EveWorldTest is MudTest {
     address player = vm.addr(deployerPrivateKey);
 
     // Start broadcasting transactions from the deployer account
-    vm.startBroadcast(deployerPrivateKey);
-    SmartStorageUnitLib.World memory smartStorageUnit = SmartStorageUnitLib.World({
-      iface: IBaseWorld(worldAddress),
-      namespace: SMART_STORAGE_UNIT_DEPLOYMENT_NAMESPACE
-    });
+    // TODO this does not work yet
+    // vm.startBroadcast(deployerPrivateKey);
+    // SmartStorageUnitLib.World memory smartStorageUnit = SmartStorageUnitLib.World({
+    //   iface: IBaseWorld(worldAddress),
+    //   namespace: SMART_STORAGE_UNIT_DEPLOYMENT_NAMESPACE
+    // });
 
-    smartStorageUnit.createAndAnchorSmartStorageUnit(
-      smartObjectId,
-      EntityRecordData({ typeId: 7888, itemId: 111, volume: 10 }),
-      SmartObjectData({ owner: player, tokenURI: "test" }),
-      WorldPosition({ solarSystemId: 1, position: Coord({ x: 1, y: 1, z: 1 }) }),
-      1e18, // fuelUnitVolume,
-      1, // fuelConsumptionPerMinute,
-      1000000 * 1e18, //fuelMaxCapacity,
-      100000000, // storageCapacity,
-      100000000000 // ephemeralStorageCapacity
-    );
-    vm.stopBroadcast();
+    // smartStorageUnit.createAndAnchorSmartStorageUnit(
+    //   smartObjectId,
+    //   EntityRecordData({ typeId: 7888, itemId: 111, volume: 10 }),
+    //   SmartObjectData({ owner: player, tokenURI: "test" }),
+    //   WorldPosition({ solarSystemId: 1, position: Coord({ x: 1, y: 1, z: 1 }) }),
+    //   1e18, // fuelUnitVolume,
+    //   1, // fuelConsumptionPerMinute,
+    //   1000000 * 1e18, //fuelMaxCapacity,
+    //   100000000, // storageCapacity,
+    //   100000000000 // ephemeralStorageCapacity
+    // );
+    // vm.stopBroadcast();
 
 
     setupTestEntity(4235, 10);

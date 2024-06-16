@@ -8,7 +8,8 @@ import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "@latticexyz
 import { IBaseWorld } from "@eveworld/world/src/codegen/world/IWorld.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance }  from "@latticexyz/world/src/WorldResourceId.sol";
 
-import { PlayerLikes } from "../src/codegen/tables/PlayerLikes.sol";
+// import { PlayerLikes } from "../src/codegen/tables/PlayerLikes.sol";
+import { PlayerMetrics } from "../src/codegen/tables/PlayerMetrics.sol";
 import { ICapsuleerCourierService } from "../src/codegen/world/ICapsuleerCourierService.sol";
 
 import "../src/systems/capsuleer_courier_service/CapsuleerCourierService.sol";
@@ -86,7 +87,7 @@ contract DeliveryTest is EveWorldTest {
     vm.assume(addLikes != 0);
 
     vm.startBroadcast(deployerPrivateKey);
-    uint256 existingLikes = PlayerLikes.get(sender);
+    uint256 existingLikes = PlayerMetrics.getLikes(sender);
     vm.stopBroadcast();
 
     world.call(
@@ -95,7 +96,7 @@ contract DeliveryTest is EveWorldTest {
     );
 
     vm.startBroadcast(deployerPrivateKey);
-    uint256 updatedLikes = PlayerLikes.get(sender);
+    uint256 updatedLikes = PlayerMetrics.getLikes(sender);
     assertEq(updatedLikes, existingLikes + addLikes);
     vm.stopBroadcast();
   }
@@ -105,7 +106,7 @@ contract DeliveryTest is EveWorldTest {
     vm.assume(addLikes != 0);
 
     vm.startBroadcast(deployerPrivateKey);
-    uint256 existingLikes = PlayerLikes.get(sender);
+    uint256 existingLikes = PlayerMetrics.getLikes(sender);
     vm.stopBroadcast();
 
     // add likes twice to test that we are adding to existing likes
@@ -115,7 +116,7 @@ contract DeliveryTest is EveWorldTest {
     );
 
     vm.startBroadcast(deployerPrivateKey);
-    uint256 updatedLikes = PlayerLikes.get(sender);
+    uint256 updatedLikes = PlayerMetrics.getLikes(sender);
     assertEq(updatedLikes, existingLikes + addLikes);
     vm.stopBroadcast();
 
@@ -126,7 +127,7 @@ contract DeliveryTest is EveWorldTest {
 
 
     vm.startBroadcast(deployerPrivateKey);
-    uint256 finalLikes = PlayerLikes.get(sender);
+    uint256 finalLikes = PlayerMetrics.getLikes(sender);
     assertEq(finalLikes, existingLikes + addLikes + addLikes);
     vm.stopBroadcast();
   }

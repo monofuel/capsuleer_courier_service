@@ -24,7 +24,8 @@ import "@eveworld/common-constants/src/constants.sol";
 
 import { Deliveries, DeliveriesData } from "../../codegen/tables/Deliveries.sol";
 import { ItemLikes } from "../../codegen/tables/ItemLikes.sol";
-import { PlayerLikes } from "../../codegen/tables/PlayerLikes.sol";
+// import { PlayerLikes } from "../../codegen/tables/PlayerLikes.sol";
+import { PlayerMetrics } from "../../codegen/tables/PlayerMetrics.sol";
 
 import { AccessControlLib } from "@latticexyz/world-modules/src/utils/AccessControlLib.sol";
 import { SystemRegistry } from "@latticexyz/world/src/codegen/tables/SystemRegistry.sol";
@@ -87,9 +88,30 @@ contract CapsuleerCourierService is System {
   // TESTED
   function addPlayerLikes(address playerAddress, uint256 amount) internal {
     console.log("Adding likes to player:", playerAddress, " amount:", amount);
-    uint256 existingLikes = PlayerLikes.get(playerAddress);
+    uint256 existingLikes = PlayerMetrics.getLikes(playerAddress);
     console.log("fetched existing likes");
-    PlayerLikes.set(playerAddress, existingLikes + amount);
+    PlayerMetrics.setLikes(playerAddress, existingLikes + amount);
+  }
+
+  function getSSUOwner(uint256 smartObjectId) internal returns (address) {
+    return IERC721(DeployableTokenTable.getErc721Address(FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.deployableTokenTableId())).ownerOf(
+      smartObjectId
+    );
+  }
+
+  function incrementPendingSupply(address user) internal returns (uint256 pendingSupplyCount) {
+    pendingSupplyCount = PlayerMetrics.getPendingSupplyCount(user) + 1;
+    PlayerMetrics.setPendingSupplyCount(user, pendingSupplyCount);
+  }
+
+  function decrementPendingSupply(address user) internal returns (uint256 pendingSupplyCount) {
+    pendingSupplyCount = PlayerMetrics.getPendingSupplyCount(user) - 1;
+    PlayerMetrics.setPendingSupplyCount(user, pendingSupplyCount);
+  }
+
+  function incrementDeliveriesCompleted(address user) internal returns (uint256 deliveriesCompleted) {
+    deliveriesCompleted = PlayerMetrics.getDeliveriesCompleted(user) + 1;
+    PlayerMetrics.setDeliveriesCompleted(user, deliveriesCompleted);
   }
 
   function createDeliveryRequest(
@@ -99,6 +121,9 @@ contract CapsuleerCourierService is System {
   ) public {
     require(itemQuantity > 0, "quantity cannot be 0");
     require(itemQuantity <= 500, "quantity cannot be more than 500");
+
+    uint256 pendingSupplyCount = incrementPendingSupply(_msgSender());
+    require(pendingSupplyCount <= 5, "cannot have more than 5 pending supply requests");
 
     // TODO validate smartObjectId
     uint256 itemId = getValidatedItemId(typeId);
@@ -119,6 +144,9 @@ contract CapsuleerCourierService is System {
   function delivered(
     uint256 deliveryId
   ) public {
+
+    // sender is the person fulfilling the supply request
+    incrementDeliveriesCompleted(_msgSender());
 
     // delivery validation
     DeliveriesData memory delivery = Deliveries.get(deliveryId);
@@ -152,7 +180,7 @@ contract CapsuleerCourierService is System {
     InventoryItem[] memory outItems = new InventoryItem[](1);
     outItems[0] = InventoryItem(
       delivery.itemId, // inventoryItemId
-      _msgSender(), // sender
+      _msgSender(), // sender / supplier
       itemEntity.itemId, // itemId
       itemEntity.typeId, // typeId
       itemEntity.volume, // volume
@@ -179,6 +207,8 @@ contract CapsuleerCourierService is System {
   function pickup(
     uint256 deliveryId
   ) public {
+    // sender is the receiver picking up delivery
+    uint256 pendingSupplyCount = decrementPendingSupply(_msgSender());
 
     DeliveriesData memory delivery = Deliveries.get(deliveryId);
     if (_msgSender() != delivery.receiver) {
@@ -198,9 +228,7 @@ contract CapsuleerCourierService is System {
       );
     }
 
-    address ssuOwner = IERC721(DeployableTokenTable.getErc721Address(FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.deployableTokenTableId())).ownerOf(
-      delivery.smartObjectId
-    );
+    address ssuOwner = getSSUOwner(delivery.smartObjectId);
     
     // move the output to the requesting user's inventory
     InventoryItem[] memory outItems = new InventoryItem[](1);
@@ -218,7 +246,7 @@ contract CapsuleerCourierService is System {
   }
 
   function getLikes() public view returns (uint256) {
-    return PlayerLikes.get(_msgSender());
+    return PlayerMetrics.getLikes(_msgSender());
   }
 
   function _inventoryLib() internal view returns (InventoryLib.World memory) {
