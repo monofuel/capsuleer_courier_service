@@ -30,8 +30,6 @@ contract DeliveryTest is EveWorldTest {
   function setUp() public override {
     setupWorld();
     setupCCSWrapper();
-    setupModules();
-    setupTestEntities();
   }
 
   function setupCCSWrapper() public {
@@ -160,11 +158,17 @@ contract DeliveryTest is EveWorldTest {
     assertEq(likes, amount);
   }
 
-  function testValidatedItemId() public {
-    // TODO
-    // need to add an item entity to the EntityRecordTable
-    // then test getValidatedItemId(itemId)
-  }
+  // function testValidatedItemId() public {
+  //   uint256 typeId = 77800;
+  //   uint256 expectedItemId = getItemId(typeId);
+
+  //   bytes memory result = world.call(
+  //     CCS_SYSTEM_ID,
+  //     abi.encodeCall(CapsuleerCourierService.getValidatedItemId, (typeId))
+  //   );
+  //   uint256 itemId = abi.decode(result, (uint256));
+  //   assertEq(itemId, expectedItemId);
+  // }
 
   
 }
