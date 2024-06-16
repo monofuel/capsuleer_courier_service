@@ -138,4 +138,39 @@ contract DeliveryTest is MudTest {
     assertEq(finalLikes, existingLikes + addLikes + addLikes);
     vm.stopBroadcast();
   }
+
+  function testRandomItemId() public {
+
+    bytes memory result = world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(CapsuleerCourierService.newRandomId, ())
+    );
+    uint256 randomId = abi.decode(result, (uint256));
+    console.log("Random ID:", randomId);
+
+  }
+
+  function testGetItemLikes() public {
+    uint256 itemId = getItemId(77800);
+    uint256 amount = 1;
+    vm.startBroadcast(deployerPrivateKey);
+    ItemLikes.set(itemId, amount);
+    vm.stopBroadcast();
+
+    bytes memory result = world.call(
+      CCS_SYSTEM_ID,
+      abi.encodeCall(CapsuleerCourierService.getItemLikes, (itemId))
+    );
+
+    uint256 likes = abi.decode(result, (uint256));
+    assertEq(likes, amount);
+  }
+
+  function testValidatedItemId() {
+    // TODO
+    // need to add an item entity to the EntityRecordTable
+    // then test getValidatedItemId(itemId)
+  }
+
+  
 }

@@ -44,6 +44,38 @@ contract CapsuleerCourierService is System {
     return uint256(keccak256(abi.encodePacked(packed)));
   }
 
+  function getValidatedItemId(uint256 typeId) public view returns (uint256) {
+    uint256 itemId = getItemId(typeId);
+    EntityRecordTableData memory itemEntity = EntityRecordTable.get(
+      FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.entityRecordTableId(),
+      itemId
+    );
+    if (itemEntity.recordExists == false) {
+      revert IInventoryErrors.Inventory_InvalidItem(
+        "CCS: item is not created on-chain",
+        itemId
+      );
+    }
+    return itemId;
+  }
+
+  // TESTED
+  function getItemLikes(uint256 itemId) public view returns (uint256) {
+    uint256 likes = ItemLikes.get(itemId);
+    if (likes == 0) {
+      revert IInventoryErrors.Inventory_InvalidItem(
+        "CCS: item type does not have likes associated",
+        itemId
+      );
+    }
+    return likes;
+  }
+
+  // TESTED
+  function newRandomId() public view returns (uint256 randomId) {
+    randomId = uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao)));
+  }
+
   // TESTED
   function setLikes(uint256 typeId, uint256 amount) public {
     _requireOwner();
@@ -68,32 +100,9 @@ contract CapsuleerCourierService is System {
     require(itemQuantity > 0, "quantity cannot be 0");
     require(itemQuantity <= 500, "quantity cannot be more than 500");
 
-    uint256 itemId = getItemId(typeId);
-
-    EntityRecordTableData memory itemEntity = EntityRecordTable.get(
-      FRONTIER_WORLD_DEPLOYMENT_NAMESPACE.entityRecordTableId(),
-      itemId
-    );
-    if (itemEntity.recordExists == false) {
-      revert IInventoryErrors.Inventory_InvalidItem(
-        "CCS: item is not created on-chain",
-        itemId
-      );
-    }
-
-    uint256 likes = ItemLikes.get(itemId);
-    if (likes == 0) {
-      revert IInventoryErrors.Inventory_InvalidItem(
-        "CCS: item type does not have likes associated",
-        itemId
-      );
-    }
-
-    // I Considered incremental IDs, but the contract fields get reset every deployment.
-    // I could store a counter in a MUD table, but that sounds annoying.
-    // a random uint256 should be more than practical without needing any state tracking.
-    uint256 deliveryId = uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao)));
-    // uint256 deliveryId = 1;
+    uint256 itemId = getValidatedItemId(typeId);
+    uint256 likes = getItemLikes(itemId);
+    uint256 deliveryId = newRandomId();
 
     Deliveries.set(
       deliveryId,
