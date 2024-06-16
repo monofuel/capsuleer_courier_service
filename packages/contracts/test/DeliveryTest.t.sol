@@ -13,6 +13,8 @@ import { ICapsuleerCourierService } from "../src/codegen/world/ICapsuleerCourier
 
 import "../src/systems/capsuleer_courier_service/CapsuleerCourierService.sol";
 
+import { EveWorldTest } from "./EveWorldTest.t.sol";
+
 contract TestCapsuleerCourierService is CapsuleerCourierService {
     // Expose internal functions
     function tAddPlayerLikes(address player, uint256 likes) public {
@@ -20,19 +22,19 @@ contract TestCapsuleerCourierService is CapsuleerCourierService {
     }
 }
 
-contract DeliveryTest is MudTest {
+contract DeliveryTest is EveWorldTest {
   using WorldResourceIdInstance for ResourceId;
 
-  IBaseWorld world;
   ResourceId CCS_SYSTEM_ID;
-  uint256 deployerPrivateKey;
 
   function setUp() public override {
-    worldAddress = vm.envAddress("WORLD_ADDRESS");
-    StoreSwitch.setStoreAddress(worldAddress);
-    world = IBaseWorld(worldAddress);
-    deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    setupWorld();
+    setupCCSWrapper();
+    setupModules();
+    setupTestEntities();
+  }
 
+  function setupCCSWrapper() public {
     // Setup a test CCS wrapper system to replace the existing one
     bytes14 CCS_DEPLOYMENT_NAMESPACE = "borp";
     bytes16 SYSTEM_NAME = bytes16("CapsuleerCourier");
@@ -41,16 +43,8 @@ contract DeliveryTest is MudTest {
 
     vm.startBroadcast(deployerPrivateKey);
     TestCapsuleerCourierService testCCS = new TestCapsuleerCourierService();
-
     world.registerSystem(CCS_SYSTEM_ID, testCCS, true);
-    
     vm.stopBroadcast();
-
-  }
-
-  function getItemId(uint256 typeId) public pure returns (uint256) {
-    string memory packed = string(abi.encodePacked("item:devnet-", Strings.toString(typeId)));
-    return uint256(keccak256(abi.encodePacked(packed)));
   }
   
   function testGetItemId(uint16 typeId) public {
@@ -166,7 +160,7 @@ contract DeliveryTest is MudTest {
     assertEq(likes, amount);
   }
 
-  function testValidatedItemId() {
+  function testValidatedItemId() public {
     // TODO
     // need to add an item entity to the EntityRecordTable
     // then test getValidatedItemId(itemId)

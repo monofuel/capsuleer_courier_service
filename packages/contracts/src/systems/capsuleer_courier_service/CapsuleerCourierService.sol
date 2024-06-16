@@ -100,6 +100,7 @@ contract CapsuleerCourierService is System {
     require(itemQuantity > 0, "quantity cannot be 0");
     require(itemQuantity <= 500, "quantity cannot be more than 500");
 
+    // TODO validate smartObjectId
     uint256 itemId = getValidatedItemId(typeId);
     uint256 likes = getItemLikes(itemId);
     uint256 deliveryId = newRandomId();
