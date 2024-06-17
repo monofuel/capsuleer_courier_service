@@ -1,7 +1,7 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  namespace: "borp",
+  namespace: "borp2",
   systems: {
     CapsuleerCourierService: {
       name: "CapsuleerCourierService",

@@ -8,7 +8,7 @@ import { ICapsuleerCourierService } from "../src/codegen/world/ICapsuleerCourier
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-bytes14 constant CCS_DEPLOYMENT_NAMESPACE = "borp";
+// bytes14 constant CCS_DEPLOYMENT_NAMESPACE = "borp";
 
 contract CreateDelivery is Script {
   function run(address worldAddress) external {
@@ -22,7 +22,7 @@ contract CreateDelivery is Script {
     uint256 typeId = 77800;
     uint256 itemQuantity = 55;
 
-    ccs.borp__createDeliveryRequest(smartObjectId, typeId, itemQuantity);
+    ccs.borp2__createDeliveryRequest(smartObjectId, typeId, itemQuantity);
     // console.log("Delivery ID: ", deliveryId);
 
 

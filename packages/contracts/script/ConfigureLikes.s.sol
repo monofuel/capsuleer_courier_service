@@ -8,7 +8,7 @@ import { ICapsuleerCourierService } from "../src/codegen/world/ICapsuleerCourier
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-bytes14 constant CCS_DEPLOYMENT_NAMESPACE = "borp";
+// bytes14 constant CCS_DEPLOYMENT_NAMESPACE = "borp";
 
 contract ConfigureLikes is Script {
   function run(address worldAddress) external {
@@ -18,8 +18,42 @@ contract ConfigureLikes is Script {
 
     ICapsuleerCourierService ccs = ICapsuleerCourierService(worldAddress);
 
-    ccs.borp__setLikes(77800, 1); // common ore
-    ccs.borp__setLikes(77811, 1); // carbonaceous ore
+  // - Carbonaceous Materials
+  //   - 77804
+  // - Iron-Nickel Metals
+  //   - 77801
+  // - light Metals
+  //   - 77802
+  // - Osmium
+  //   - 78424
+  // - Precious Metals and Elements
+  //   - 77805
+  // - Silicates
+  //   - 77803
+  // - Sophrogon
+  //   - 77728
+  // - Thorium
+  //   - 78425
+  // - Water Ice
+  //   - 78423
+  // - EU-40 Fuel
+  //   - 78516
+  // - HAK-55 Fuel
+  //   - 79458
+  // - usof-30 fuel
+  //   - 77818
+  // - salt
+  //   - 83839
+
+    // ccs.borp__setLikes(77800, 1); // common ore
+    // ccs.borp__setLikes(77811, 1); // carbonaceous ore
+
+    uint24[15] memory itemIds = [77804, 77801, 77802, 78424, 77805, 77803, 77728, 78425, 78423, 78516, 79458, 77818, 83839, 77800, 77811];
+
+    // Loop through each item ID and call the setLikes function
+    for (uint i = 0; i < itemIds.length; i++) {
+        ccs.borp2__setLikes(itemIds[i], 1);
+    }
 
     vm.stopBroadcast();
   }

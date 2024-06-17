@@ -18,12 +18,11 @@
     "create-delivery": ". ./.env.testnet && pnpm forge script ./script/CreateDelivery.s.sol:CreateDelivery --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
     "deliver": ". ./.env.testnet && pnpm forge script ./script/Deliver.s.sol:Deliver --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv",
     "pickup": ". ./.env.testnet && pnpm forge script ./script/Pickup.s.sol:Pickup --broadcast --rpc-url $RPC_URL --chain-id $CHAIN_ID --sig \"run(address)\" $WORLD_ADDRESS -vvv"
-    
   },
   "dependencies": {
     "@eveworld/common-constants": "^0.0.7",
     "@eveworld/world": "^0.0.7",
-    "@latticexyz/cli": "^2.0.0-next-17-awakening-9c07ab3a2",
+    "@latticexyz/cli": "2.0.0-next-17-awakening-9c07ab3a2",
     "@latticexyz/schema-type": "2.0.0-next-17-awakening-9c07ab3a2",
     "@latticexyz/store": "2.0.0-next-17-awakening-9c07ab3a2",
     "@latticexyz/world": "2.0.0-next-17-awakening-9c07ab3a2",

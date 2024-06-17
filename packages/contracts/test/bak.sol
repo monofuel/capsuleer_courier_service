@@ -204,7 +204,7 @@ contract DeliveryTest is MudTest {
       ResourceId.wrap((bytes32(abi.encodePacked(RESOURCE_SYSTEM, CCS_DEPLOYMENT_NAMESPACE, SYSTEM_NAME))));
 
     // Set likes for our mock item
-    ccs.borp__setLikes(typeId, itemlikes);
+    ccs.borp2__setLikes(typeId, itemlikes);
 
     // create a delivery for our item
     vm.startPrank(receiver);
@@ -213,7 +213,7 @@ contract DeliveryTest is MudTest {
     //   CCS_SYSTEM_ID,
     //   abi.encodeCall(CapsuleerCourierService.createDeliveryRequest, (smartObjectId, typeId, itemQuantity))
     // );
-    ccs.borp__createDeliveryRequest(smartObjectId, typeId, itemQuantity);
+    ccs.borp2__createDeliveryRequest(smartObjectId, typeId, itemQuantity);
     // uint256 deliveryId = ccs.borp__createDeliveryRequest(smartObjectId, typeId, itemQuantity);
     // uint256 deliveryId = abi.decode(data, (uint256));
     vm.stopPrank();
@@ -245,7 +245,7 @@ contract DeliveryTest is MudTest {
     ephemeralInventory.depositToEphemeralInventory(smartObjectId, sender, items);
 
     vm.startPrank(sender);
-    ccs.borp__delivered(deliveryId);
+    ccs.borp2__delivered(deliveryId);
     vm.stopPrank();
 
     delivery = Deliveries.get(deliveryId);
@@ -265,7 +265,7 @@ contract DeliveryTest is MudTest {
     
     // pickup the delivery
     vm.startPrank(receiver);
-    ccs.borp__pickup(deliveryId);
+    ccs.borp2__pickup(deliveryId);
     vm.stopPrank();
 
     delivery = Deliveries.get(deliveryId);

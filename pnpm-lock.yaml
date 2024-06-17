@@ -166,8 +166,8 @@ importers:
         specifier: ^0.0.7
         version: 0.0.7(google-protobuf@3.21.2)(typescript@5.1.6)(zod@3.23.8)
       '@latticexyz/cli':
-        specifier: ^2.0.0-next-17-awakening-9c07ab3a2
-        version: 2.0.0-transaction-context-98ef570f(google-protobuf@3.21.2)
+        specifier: 2.0.0-next-17-awakening-9c07ab3a2
+        version: 2.0.0-next-17-awakening-9c07ab3a2(google-protobuf@3.21.2)
       '@latticexyz/schema-type':
         specifier: 2.0.0-next-17-awakening-9c07ab3a2
         version: 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8)
@@ -1493,6 +1493,19 @@ packages:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
+  /@latticexyz/abi-ts@2.0.0-next-17-awakening-9c07ab3a2:
+    resolution: {integrity: sha512-KNGVhxWnWY7oQndawBnpcXcXY2pew+bulcnmK0csRm0xQ5yg2MX5uER+3pgIuPqAGckk8DWLP20A/qfauJdkpg==}
+    hasBin: true
+    dependencies:
+      chalk: 5.3.0
+      debug: 4.3.4
+      execa: 7.2.0
+      glob: 8.1.0
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@latticexyz/abi-ts@2.0.0-transaction-context-98ef570f:
     resolution: {integrity: sha512-KkhSzgynZgz2IyvVSz7WM627NSaQctImn4OnT5Lt1P9gsAEhb+IEkm3XIyaGP8RXViuG/U62cYhDpc6yXT7F3g==}
     hasBin: true
@@ -1519,6 +1532,51 @@ packages:
       - typescript
       - utf-8-validate
       - zod
+    dev: false
+
+  /@latticexyz/cli@2.0.0-next-17-awakening-9c07ab3a2(google-protobuf@3.21.2):
+    resolution: {integrity: sha512-JC0SC8s/D+2iND67DkdKQhTPeMUKKDUzp7KhjPgq9GZMNT6fHey5SWK572/8U890eBjBR8sIO3oB3H9QL174tw==}
+    hasBin: true
+    dependencies:
+      '@ethersproject/abi': 5.7.0
+      '@ethersproject/providers': 5.7.2
+      '@improbable-eng/grpc-web': 0.15.0(google-protobuf@3.21.2)
+      '@improbable-eng/grpc-web-node-http-transport': 0.15.0(@improbable-eng/grpc-web@0.15.0)
+      '@latticexyz/abi-ts': 2.0.0-next-17-awakening-9c07ab3a2
+      '@latticexyz/common': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8)
+      '@latticexyz/config': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)
+      '@latticexyz/gas-report': 2.0.0-next-17-awakening-9c07ab3a2
+      '@latticexyz/protocol-parser': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8)
+      '@latticexyz/schema-type': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8)
+      '@latticexyz/services': 2.0.0-next-17-awakening-9c07ab3a2(google-protobuf@3.21.2)
+      '@latticexyz/store': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)
+      '@latticexyz/utils': 2.0.0-next-17-awakening-9c07ab3a2
+      '@latticexyz/world': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)
+      '@latticexyz/world-modules': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)
+      chalk: 5.3.0
+      chokidar: 3.6.0
+      debug: 4.3.4
+      dotenv: 16.4.5
+      ejs: 3.1.10
+      ethers: 5.7.2
+      execa: 7.2.0
+      glob: 8.1.0
+      nice-grpc-web: 2.0.2(google-protobuf@3.21.2)
+      openurl: 1.1.1
+      p-retry: 5.1.2
+      path: 0.12.7
+      rxjs: 7.5.5
+      throttle-debounce: 5.0.0
+      typescript: 5.1.6
+      viem: 1.14.0(typescript@5.1.6)(zod@3.23.8)
+      yargs: 17.7.2
+      zod: 3.23.8
+      zod-validation-error: 1.5.0(zod@3.23.8)
+    transitivePeerDependencies:
+      - bufferutil
+      - google-protobuf
+      - supports-color
+      - utf-8-validate
     dev: false
 
   /@latticexyz/cli@2.0.0-transaction-context-98ef570f(google-protobuf@3.21.2):
@@ -1710,6 +1768,19 @@ packages:
       - zod
     dev: false
 
+  /@latticexyz/gas-report@2.0.0-next-17-awakening-9c07ab3a2:
+    resolution: {integrity: sha512-KQwM4FRoIEFGscBWvvbjJ5DbB2hje+8vbKSuUjGy/WxHzzH845HYu0YwjcqqK/qJx4t7sk//NgTdop4pdUeqEg==}
+    hasBin: true
+    dependencies:
+      chalk: 5.3.0
+      dotenv: 16.4.5
+      execa: 7.2.0
+      stream-to-array: 2.3.0
+      strip-ansi: 7.1.0
+      table: 6.8.2
+      yargs: 17.7.2
+    dev: false
+
   /@latticexyz/gas-report@2.0.0-transaction-context-98ef570f:
     resolution: {integrity: sha512-QCCiQc91eD0WaSECRbq+Rr5kzUTrt/KxTw9Qz4YZQ5zoXFmI8uF/hXcCPRZdtmwfSMLaSDdySA/45jJF6n/eaQ==}
     hasBin: true
@@ -1721,6 +1792,21 @@ packages:
       strip-ansi: 7.1.0
       table: 6.8.2
       yargs: 17.7.2
+
+  /@latticexyz/protocol-parser@2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8):
+    resolution: {integrity: sha512-PMcX1/W3sQh3TBDUZNejYDxSFQtipgJW1l5MLVhDXVkNvRwK/Q2xhQ/DR+NHXbXkGbxkhRPxNjRwUvbB8YToOg==}
+    dependencies:
+      '@latticexyz/common': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8)
+      '@latticexyz/schema-type': 2.0.0-next-17-awakening-9c07ab3a2(typescript@5.1.6)(zod@3.23.8)
+      abitype: 0.9.8(typescript@5.1.6)(zod@3.23.8)
+      viem: 1.14.0(typescript@5.1.6)(zod@3.23.8)
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
 
   /@latticexyz/protocol-parser@2.0.0-transaction-context-98ef570f(typescript@5.1.6)(zod@3.23.8):
     resolution: {integrity: sha512-E6u2HGpgQJt2gSeTsrVrWSgD+NUnMJjEZhJfsGrI2Gw3xDfat58wp/yzrcwMnqtWMrCz2L2gq4T5jrk6felJkQ==}
@@ -1815,6 +1901,17 @@ packages:
       - typescript
       - utf-8-validate
       - zod
+    dev: false
+
+  /@latticexyz/services@2.0.0-next-17-awakening-9c07ab3a2(google-protobuf@3.21.2):
+    resolution: {integrity: sha512-Jk7xQIoBXM71lR4ag0e8lSxx9kYhqZUR7PcL64Imqbznl1k0gvhUgVHUBn+vBKHr0A/KPa5PREocl0T8x0w9PA==}
+    dependencies:
+      long: 5.2.3
+      nice-grpc-common: 2.0.2
+      nice-grpc-web: 2.0.2(google-protobuf@3.21.2)
+      protobufjs: 7.3.0
+    transitivePeerDependencies:
+      - google-protobuf
     dev: false
 
   /@latticexyz/services@2.0.0-transaction-context-98ef570f(google-protobuf@3.21.2):
@@ -1922,6 +2019,14 @@ packages:
       - supports-color
       - typescript
       - utf-8-validate
+    dev: false
+
+  /@latticexyz/utils@2.0.0-next-17-awakening-9c07ab3a2:
+    resolution: {integrity: sha512-k55m32GuCVQVZNr0kuvS5bw3Ng88q3sTDaq9icdqn+KSINd6Bm3tdgITb64/XdKsWY3mSG8WvjWqjWXKX27Nwg==}
+    dependencies:
+      mobx: 6.12.3
+      proxy-deep: 3.1.1
+      rxjs: 7.5.5
     dev: false
 
   /@latticexyz/utils@2.0.0-transaction-context-98ef570f:

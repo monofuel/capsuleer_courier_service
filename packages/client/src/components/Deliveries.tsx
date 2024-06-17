@@ -26,45 +26,25 @@ interface Deliveries {
   delivered: boolean;
 }
 
-// Mock data
-const mockDeliveries: Deliveries[] = [
-  { deliveryId: '1', smartObjectId: "1", itemId: '1', delivered: false ,
-  typeId: '1',
-  itemQuantity: 1,
-  sender: "0x123",
-  receiver: "0x456"
-  },
-  { deliveryId: '2', smartObjectId: "1", itemId: '2', delivered: true ,
-  typeId: '2',
-  itemQuantity: 1,
-  sender: "0x123",
-  receiver: "0x456"
-  },
-  // Add more deliveries as needed
-];
-
 
 interface DeliverItemOpts {
   deliveryId: BigInt;
 }
 
-// async function deliverItem(opts: DeliverItemOpts) {
-//   console.log("Delivering item", opts);
-//   // TODO
-
-//   // TODO need to fetch SSU data, and map typeId to itemId for this SSU
-// }
-
 interface PickupItemOpts {
   deliveryId: BigInt;
 }
 
-// async function pickupItem(opts: PickupItemOpts) {
-//   console.log("Picking up item", opts);
-//   // TODO
-
-// }
-
+interface PlayerMetrics {
+  key: {
+    playerAddress: string;
+  },
+  value: {
+    likes: BigInt;
+    deliveriesCompleted: BigInt;
+    pendingSupplyCount: BigInt;
+  };
+}
 
 interface CreateDeliveryOpts {
   smartObjectId: string;
@@ -115,7 +95,7 @@ function CreateDelivery({ network, submitDisabled, typeMap, smartObjectId, creat
         </label> */}
         <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', width: '25em', justifyContent: 'space-between' }}>
           Item Type:
-          <select 
+          {/* <select // SELECT LIST IS BROKEN IN BROWSER 
             style={{
               backgroundColor: "hsla(26, 85%, 18%, 0.5)",
               width: "15em"
@@ -130,7 +110,28 @@ function CreateDelivery({ network, submitDisabled, typeMap, smartObjectId, creat
                 {type.name}
               </option>
             ))}
-          </select>
+          </select> */}
+          <input 
+            list="types" 
+            id="typeInput"
+            style={{
+              backgroundColor: "hsla(26, 85%, 18%, 0.5)",
+              width: "15em"
+            }}
+            value={typeId} /* TODO should display item name, not typeId */
+            onInput={e => setTypeId((e.target as HTMLInputElement).value)}
+          />
+
+          <datalist id="types">
+            {Object.entries(typeMap)
+              .filter(([typeId, type]) => typeIdWhitelist.includes(typeId))
+              .map(([typeId, type]) => (
+              <option key={typeId} value={typeId}>
+                {type.name}
+              </option>
+            ))}
+          </datalist>
+
         </label>
         <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', width: '25em', justifyContent: 'space-between' }}>
           Item Quantity:
@@ -181,38 +182,21 @@ export default function Deliveries({ network }: DeliveriesProps) {
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
-  // const [deliveries, setDeliveries] = useState<Deliveries[]>([]);
-  // useEffect(() => {
-  //   async function fetchDeliveries() {
-  //     const deliveries = await getDeliveries();
-  //     setDeliveries(deliveries);
-  //   }
-
-  //   fetchDeliveries();
-  // }, []);
-
-  // smart object id
-
-  // const { ItemLikes } = network.components;
-  // const entities = useEntityQuery([Has(ItemLikes)])  
-  // if (entities.length !== 0) {
-  //   console.log("RECS Entities:", entities);
-  // }
 
   const deliveries = network.useStore(state => Object.values(state.getRecords(network.tables.Deliveries)));
   (window as any).deliveries = deliveries;
 
-  const playerLikes = network.useStore(state => Object.values(state.getRecords(network.tables.PlayerLikes)));
-  (window as any).playerLikes = playerLikes;
+  const playerMetrics = network.useStore(state => Object.values(state.getRecords(network.tables.PlayerMetrics)));
+  (window as any).playerMetrics = playerMetrics;
 
   const itemLikes = network.useStore(state => Object.values(state.getRecords(network.tables.ItemLikes)));
   (window as any).itemLikes = itemLikes;
 
-  var likes = BigInt(0);
-  for (const l of playerLikes) {
+  var thisPlayerMetrics: PlayerMetrics | null = null;
+  for (const m of playerMetrics) {
     const walletAddr = walletClient?.account?.address;
-    if (walletAddr && l.key.playerAddress.toLowerCase() === walletAddr.toLowerCase()) {
-      likes = l.value.likes;
+    if (walletAddr && m.key.playerAddress.toLowerCase() === walletAddr.toLowerCase()) {
+      thisPlayerMetrics = m;
     }
   }
 
@@ -228,7 +212,7 @@ export default function Deliveries({ network }: DeliveriesProps) {
 
       const txRequest = await publicClient.simulateContract({
         ...network.worldContract,
-        functionName: "borp__createDeliveryRequest",
+        functionName: "borp2__createDeliveryRequest",
         args: [
           BigInt(opts.smartObjectId),
           BigInt(opts.typeId),
@@ -268,7 +252,7 @@ export default function Deliveries({ network }: DeliveriesProps) {
 
       const txRequest = await publicClient.simulateContract({
         ...network.worldContract,
-        functionName: "borp__delivered",
+        functionName: "borp2__delivered",
         args: [
           opts.deliveryId,
         ] as any,
@@ -307,7 +291,7 @@ export default function Deliveries({ network }: DeliveriesProps) {
 
       const txRequest = await publicClient.simulateContract({
         ...network.worldContract,
-        functionName: "borp__pickup",
+        functionName: "borp2__pickup",
         args: [
           opts.deliveryId,
         ] as any,
@@ -333,6 +317,11 @@ export default function Deliveries({ network }: DeliveriesProps) {
 
   }
 
+  var pickupTable = (
+    <div>
+      Rebuffering...
+    </div>
+  );
 
   var deliveryTable = (
     <div>
@@ -340,10 +329,80 @@ export default function Deliveries({ network }: DeliveriesProps) {
     </div>
   );
 
+  var supplyRequestTable = (
+    <div>
+      Rebuffering...
+    </div>
+  );
+
   if (itemLikes.length > 0) {
+
+    var hasPickupOrders = false;
+    pickupTable = (
+    <div className="Quantum-Container">
+      <h1>Supply Request Pickup</h1>
+      <table className="items-center delivery-table">
+        <thead>
+          <tr>
+            <th>Pickup</th>
+          </tr>
+        </thead>
+        <tbody>
+          {deliveries.filter((delivery) => {
+            const walletAddr = walletClient?.account?.address;
+            const isMyOrder = walletAddr && delivery.value.receiver.toLowerCase() === walletAddr.toLowerCase();
+            // only show orders we can fullfill
+            return delivery.value.delivered && isMyOrder;
+          }).map((delivery) => {
+            hasPickupOrders = true;
+            const ssu = deployables[delivery.value.smartObjectId.toString()];
+            const ssuName = ssu?.name || delivery.value.smartObjectId.toString();
+
+            const senderChar = characters[delivery.value.sender.toString().toLowerCase()];
+            const receiverChar = characters[delivery.value.receiver.toString().toLowerCase()];
+            var senderName = senderChar?.name || delivery.value.sender.toString();
+            if (delivery.value.sender.startsWith("0x00000000000")) {
+              senderName = "";
+            }
+            const receiverName = receiverChar?.name || delivery.value.receiver.toString();
+
+            const walletAddr = walletClient?.account?.address;
+            const isMyOrder = walletAddr && delivery.value.receiver.toLowerCase() === walletAddr.toLowerCase();
+            const itemId = delivery.value.itemId;
+            const hexString = itemId.toString(16).padStart(64, '0');
+            const item = items[hexString];
+            const likesForItem = itemLikes.find((l) => l.key.itemId.toString() === delivery.value.itemId.toString());
+            const itemQuantity = BigInt(delivery.value.itemQuantity);
+            const totalLikes = (likesForItem?.value.likes || BigInt(0)) * itemQuantity;
+
+            return (
+            <tr key={delivery.key.deliveryId}>
+              <td style={{ maxWidth: '6em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p>SSU: {ssuName}</p>
+                <p>Item: {item?.name || "000"} | QTY: {delivery.value.itemQuantity.toString()} | Likes: {totalLikes.toString()}</p>
+                <p>Status: {delivery.value.delivered ? "Delivered" : "Pending"} | Receiver: '{receiverName}' | Sender: {senderName}</p>
+                {!delivery.value.delivered && <button className="primary primary-sm" onClick={() => deliverCallback({ deliveryId: delivery.key.deliveryId })}>Deliver</button>}
+                {(delivery.value.delivered && isMyOrder) && <button className="primary primary-sm" onClick={() => pickupCallback({ deliveryId: delivery.key.deliveryId })}>Pick up</button>}
+              </td>
+            </tr>
+          )})}
+        </tbody>
+      </table>
+    </div>
+    );
+
+    if (!hasPickupOrders) {
+      pickupTable = (
+        <div className="Quantum-Container">
+          <h1>Supply Request Pickup</h1>
+          <p>No pending supply requests to pick up</p>
+        </div>
+      )
+    }
+
     deliveryTable = (
       <div className="Quantum-Container">
-      <h1>Unfulfilled Deliveries</h1>
+      <h1>Unfulfilled Supply Requests</h1>
       <table className="items-center delivery-table">
         <thead>
           <tr>
@@ -354,7 +413,8 @@ export default function Deliveries({ network }: DeliveriesProps) {
           {deliveries.filter((delivery) => {
             const walletAddr = walletClient?.account?.address;
             const isMyOrder = walletAddr && delivery.value.receiver.toLowerCase() === walletAddr.toLowerCase();
-            return !delivery.value.delivered || isMyOrder;
+            // only show orders we can fullfill
+            return !delivery.value.delivered && !isMyOrder;
           }).map((delivery) => {
             const ssu = deployables[delivery.value.smartObjectId.toString()];
             const ssuName = ssu?.name || delivery.value.smartObjectId.toString();
@@ -391,24 +451,97 @@ export default function Deliveries({ network }: DeliveriesProps) {
       </table>
     </div>
     )
+
+
+    var hasSupplyRequestOrders = false;
+    supplyRequestTable = (
+    <div className="Quantum-Container">
+      <h1>Your Pending Supply Request Orders</h1>
+      <table className="items-center delivery-table">
+        <thead>
+          <tr>
+            <th>Supply Request</th>
+          </tr>
+        </thead>
+        <tbody>
+          {deliveries.filter((delivery) => {
+            const walletAddr = walletClient?.account?.address;
+            const isMyOrder = walletAddr && delivery.value.receiver.toLowerCase() === walletAddr.toLowerCase();
+            // only show our pending orders
+            return !delivery.value.delivered && isMyOrder;
+          }).map((delivery) => {
+            hasSupplyRequestOrders = true;
+            const ssu = deployables[delivery.value.smartObjectId.toString()];
+            const ssuName = ssu?.name || delivery.value.smartObjectId.toString();
+
+            const senderChar = characters[delivery.value.sender.toString().toLowerCase()];
+            const receiverChar = characters[delivery.value.receiver.toString().toLowerCase()];
+            var senderName = senderChar?.name || delivery.value.sender.toString();
+            if (delivery.value.sender.startsWith("0x00000000000")) {
+              senderName = "";
+            }
+            const receiverName = receiverChar?.name || delivery.value.receiver.toString();
+
+            const walletAddr = walletClient?.account?.address;
+            const isMyOrder = walletAddr && delivery.value.receiver.toLowerCase() === walletAddr.toLowerCase();
+            const itemId = delivery.value.itemId;
+            const hexString = itemId.toString(16).padStart(64, '0');
+            const item = items[hexString];
+            const likesForItem = itemLikes.find((l) => l.key.itemId.toString() === delivery.value.itemId.toString());
+            const itemQuantity = BigInt(delivery.value.itemQuantity);
+            const totalLikes = (likesForItem?.value.likes || BigInt(0)) * itemQuantity;
+
+            // TODO remove deliver button
+            return (
+            <tr key={delivery.key.deliveryId}>
+              <td style={{ maxWidth: '6em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p>SSU: {ssuName}</p>
+                <p>Item: {item?.name || "000"} | QTY: {delivery.value.itemQuantity.toString()} | Likes: {totalLikes.toString()}</p>
+                <p>Status: {delivery.value.delivered ? "Delivered" : "Pending"} | Receiver: '{receiverName}' | Sender: {senderName}</p>
+                {!delivery.value.delivered && <button className="primary primary-sm" onClick={() => deliverCallback({ deliveryId: delivery.key.deliveryId })}>Deliver</button>}
+                {(delivery.value.delivered && isMyOrder) && <button className="primary primary-sm" onClick={() => pickupCallback({ deliveryId: delivery.key.deliveryId })}>Pick up</button>}
+              </td>
+            </tr>
+          )})}
+        </tbody>
+      </table>
+    </div>
+    );
+
+    if (!hasSupplyRequestOrders) {
+      supplyRequestTable = (
+        <div className="Quantum-Container">
+          <h1>Your Pending Supply Request Orders</h1>
+          <p>No pending supply requests</p>
+        </div>
+      )
+    }
+
   }
 
   return (
     <div>
     <div className="Quantum-Container">
-      Likes: {likes.toString()}
+      <ul>
+
+      <li>Likes: {(thisPlayerMetrics ? thisPlayerMetrics.value.likes : BigInt(0)).toString()}</li>
+      <li>Deliveries made: {(thisPlayerMetrics ? thisPlayerMetrics.value.deliveriesCompleted : BigInt(0)).toString()}</li>
+      <li>Pending Supply Requests: {(thisPlayerMetrics ? thisPlayerMetrics.value.pendingSupplyCount : BigInt(0)).toString()} / 5</li>
+      </ul>
     </div>
     <div className="Quantum-Container font-normal text-xs !py-4">
-      <p>Fulfilling deliveries will earn you Likes!</p>
+      <p>Fulfilling Pending Supply Requests will earn you Likes!</p>
       <p>You may request items with the requisition form on this page.</p>
-      <p>You may deliver items by placing them in the SSU inventory, and selecting "Deliver" for the order.</p>
-      <p>If your requested order is delivered, you may pick them up with the "Pickup" button</p>
+      <p>You may deliver supplies to other players by placing them in the SSU inventory, and selecting "Deliver" for the order.</p>
+      <p>If your requested order is supplied by another player, you may pick them up with the "Pickup" button</p>
     </div>
     {smartObjectId &&
     <div className="Quantum-Container">
       <CreateDelivery submitDisabled={submitDisabled} typeMap={types} smartObjectId={smartObjectId} network={network} createDeliveryCallback={createCallback}/>
     </div>
     }
+    {supplyRequestTable}
+    {pickupTable}
     {deliveryTable}
     </div>
   );
